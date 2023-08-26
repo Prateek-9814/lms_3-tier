@@ -38,13 +38,13 @@ pipeline {
          stage('creating the database container') {
              steps {
                  sh 'docker container rm --force lmsdb'
-                 sh 'docker run -d -p 5432:5432 -e  POSTGRES_PASSWORD=password --name lmsdb postgres'
+                 sh 'docker run -d -p 5432:5432 --network lms -e  POSTGRES_PASSWORD=password --name lmsdb postgres'
             }
         }
          stage('Running the docker container') {
             steps {
                   sh 'docker container rm --force backend'
-                  sh 'docker run -d -p 8080:8080 -e DATABASE_URL=postgresql://postgres:password@lmsdb:5432/postgres --name backend -e PORT=8080 -e MODE=local  prateek9814/backend-lms'
+                  sh 'docker run -dt -p 8080:8080 --network lms -e DATABASE_URL=postgresql://postgres:password@lmsdb:5432/postgres --name backend -e PORT=8080 -e MODE=local  prateek9814/backend-lms'
             }
         }
     }
